@@ -1,6 +1,10 @@
+from dotenv import load_dotenv
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,declarative_base
-Database_URL="mysql+pymysql://avnadmin:AVNS_36e8KzEiDkODfxHUC-V@tejasree2006-dbfastapicrud.f.aivencloud.com:19288/defaultdb"
+load_dotenv()
+Database_URL=os.getenv("DATABASE_URL")
+print(os.getenv("DATABASE_URL"))
 engine=create_engine(Database_URL)
 sessionlocal=sessionmaker(
     autocommit=False,
