@@ -1,5 +1,7 @@
 from fastapi import FastAPI,Depends,HTTPException
 from sqlalchemy.orm import Session
+import models
+import bcrypt
 import crud,schemas
 from database import Base,engine,sessionlocal
 from typing import List
@@ -57,3 +59,19 @@ def get_courses_by_name(course_name:str,db:Session=Depends(get_db)):
         raise HTTPException(status_code=404,detail="No courses found for the specified name")
     return courses_list
 
+@app.post("/register_user")
+def create_user(student:schemas.Student,db:Session=Depends(get_db)):
+    db_student=crud.create_student(db,student)
+    return db_student
+
+ 
+def create_student(db:Session,student:schemas.Student):
+    new_student = models.Student(**student.model_dump())
+    student_password=student.password
+
+    hashed_password=bcrypt.hashpw(student_password.encode(),14)
+    new_student.hashed_password=hashed_password.decode()
+    db.add(new_student)
+    db.commit()
+    db.refresh()
+    return new_student
